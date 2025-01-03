@@ -5,14 +5,13 @@ import { useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { useState } from "react";
 
-
 const Home  = () => {
 
     //Variables para crear el cliente
     const joined = useSelector((state: { joined: boolean }) => state.joined);
     const APP_ID: string = import.meta.env.VITE_AGORA_API;
-    const { CHANNEL } = useParams<{ CHANNEL: string }>();
-    const TOKEN: string | null = null;
+    const { CHANNEL } = useParams<{ CHANNEL: string | undefined }>();
+    const TOKEN: string | null |undefined = null;
     const [RTCUID] = useState(v4()); 
 
   return (

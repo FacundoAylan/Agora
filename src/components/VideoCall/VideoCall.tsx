@@ -10,15 +10,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import LocalPlayer from "./LocalPlayer";
 import updateDevices from "../hook/devices";
-import { collection, deleteDoc, doc, getDocs, query, where, onSnapshot, writeBatch } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebase.js";
 import RemoteUsers from "./RemoteUser.js";
 import { AppDispatch } from "../redux/store.js";
 
 
 interface State {
-  CHANNEL?: string;
-  RTCUID: string | null;
   client: any;
   localAudioTrack: MediaStreamTrack | null;
   localVideoTrack: MediaStreamTrack | null;
@@ -30,8 +28,13 @@ interface Users{
   avatar:string
 }
 
+interface VideoCallProps {
+  CHANNEL?: string;
+  RTCUID: string | null;
+}
 
-const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
+
+const VideoCall: React.FC<VideoCallProps> = ({ CHANNEL, RTCUID }) => {
 
   const client = useSelector((state: State) => state.client);
   const localAudioTrack = useSelector((state: State) => state.localAudioTrack);

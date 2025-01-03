@@ -9,8 +9,8 @@ import { AppDispatch } from "../redux/store";
 // Define la interfaz para las props
 interface FormProps {
   APP_ID: string;
-  CHANNEL?: string;
-  TOKEN: string | null; 
+  CHANNEL?: string | undefined;
+  TOKEN: null | undefined; 
   RTCUID:string;
 }
 
