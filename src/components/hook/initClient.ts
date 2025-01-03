@@ -1,15 +1,13 @@
-import { Dispatch } from "redux";
 import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng";
 import { setClient, setJoined } from "../redux/actions";
+import { AppDispatch } from "../redux/store";
 
 interface JoinChannelProps {
-  dispatch: Dispatch;
+  dispatch: AppDispatch;
   APP_ID: string;
   CHANNEL: string;
-  TOKEN: string;
+  TOKEN: string | null;
   RTCUID: string; // El uid del usuario
-  userName: string; // Nombre del usuario
-  avatar: string; // Avatar del usuario
 }
 
 export const JoinChannel = async ({ 
@@ -19,8 +17,6 @@ export const JoinChannel = async ({
   TOKEN, 
   RTCUID, 
 }: JoinChannelProps) => {
-
-
 
   try {
     // Crea un cliente Agora RTC

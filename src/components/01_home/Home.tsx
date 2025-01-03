@@ -6,15 +6,14 @@ import { v4 } from "uuid";
 import { useState } from "react";
 
 
-const Home = () => {
+const Home  = () => {
 
-    //VAriables para crear el cliente
+    //Variables para crear el cliente
     const joined = useSelector((state: { joined: boolean }) => state.joined);
     const APP_ID: string = import.meta.env.VITE_AGORA_API;
     const { CHANNEL } = useParams<{ CHANNEL: string }>();
     const TOKEN: string | null = null;
     const [RTCUID] = useState(v4()); 
-
 
   return (
     <>

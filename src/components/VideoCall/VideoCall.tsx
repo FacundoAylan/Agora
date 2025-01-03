@@ -13,33 +13,32 @@ import updateDevices from "../hook/devices";
 import { collection, deleteDoc, doc, getDocs, query, where, onSnapshot, writeBatch } from "firebase/firestore";
 import { db } from "../../firebase/firebase.js";
 import RemoteUsers from "./RemoteUser.js";
+import { AppDispatch } from "../redux/store.js";
 
-interface UserState {
-  uid: string;
-  userName: string | null;
-  selectedAvatar: string | null;
-}
 
 interface State {
+  CHANNEL?: string;
+  RTCUID: string | null;
   client: any;
   localAudioTrack: MediaStreamTrack | null;
   localVideoTrack: MediaStreamTrack | null;
-  users: UserState[];
-  userName: string | null;
-  selectedAvatar : string | null;
-  remoteUsers: string[];
-  CHANNEL : String | null;
-  RTCUID: String | null;
 }
+
+interface Users{
+  uid: string;
+  name: string;
+  avatar:string
+}
+
 
 const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
 
   const client = useSelector((state: State) => state.client);
   const localAudioTrack = useSelector((state: State) => state.localAudioTrack);
   const localVideoTrack = useSelector((state: State) => state.localVideoTrack);
-  const [remoteUsers, setRemoteUsers] = useState<String[]>([]);
+  const [remoteUsers, setRemoteUsers] = useState<Users[]>([]);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const localPlayerRef = useRef<HTMLDivElement | null>(null);
 
   //Estado para controlar el mensaje de finalización de la llamada
@@ -72,13 +71,19 @@ const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
     return () => {
       navigator.mediaDevices.removeEventListener("devicechange", handleDeviceChange); 
     };
-  }, [client, dispatch, localAudioTrack, localVideoTrack, localPlayerRef, RTCUID]);
+  }, [client, localAudioTrack, localVideoTrack, localPlayerRef, RTCUID]);
   
   useEffect(() => {
+
+    if (!CHANNEL) {
+      console.error("CHANNEL no está definido en la URL");
+      return; 
+    }
+
     const collectionRef = collection(db, CHANNEL);
 
     const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
-      const users: String[] = [];
+      const users: Users[] = [];
       snapshot.forEach((doc) => {
         const data = doc.data().data;
         if (data?.uid && data?.name) {
@@ -105,12 +110,10 @@ const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
     try {
       if (localVideoTrack) {
         localVideoTrack.stop();
-        localVideoTrack.close();
       }
 
       if (localAudioTrack) {
         localAudioTrack.stop();
-        localAudioTrack.close();
       }
 
       if (client) {
@@ -124,9 +127,14 @@ const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
       dispatch(setVideoMuted(true));
 
 
-      const handleDelete = async (uid) => {
+      const handleDelete = async (uid: string): Promise<void> => {
 
         try{
+          if (!CHANNEL) {
+            console.error("CHANNEL no está definido en la URL");
+            return; 
+          }
+          
           const channelsRef = collection(db, CHANNEL);
   
           // Realizar una consulta para encontrar el documento con el uid especificado
@@ -148,6 +156,10 @@ const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
         }
       };
       // Llama a la función con el uid que deseas eliminar
+      if(!RTCUID){
+        console.log('RTCUID invalid:')
+        return
+      }
       handleDelete(RTCUID);
 
     } catch (error) {
@@ -220,18 +232,16 @@ const VideoCall: React.FC<State> = ({ CHANNEL, RTCUID }) => {
       >
         {remoteUsers.map((user) => {
           const isLocalUser = user.uid === RTCUID;
-          return (
+          return ( 
             <div key={user.uid} className="relative w-full h-full">
               {isLocalUser ? (
                 <LocalPlayer
-                  key={user.uid}
                   localPlayerRef={localPlayerRef}
                   userName={user.name}
                   selectedAvatar={user.avatar}
                 />
               ) : (
                 <RemoteUsers 
-                  key={user.uid}
                   uid = {user.uid}
                   userName={user.name} 
                   selectedAvatar={user.avatar} 

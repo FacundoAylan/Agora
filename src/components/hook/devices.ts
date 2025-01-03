@@ -1,9 +1,26 @@
-import AgoraRTC from "agora-rtc-sdk-ng";
 import { setAudioMuted, setLocalAudioTrack, setLocalVideoTrack, setVideoMuted } from "../redux/actions";
+import { AppDispatch } from "../redux/store";
+import AgoraRTC, {  ILocalAudioTrack, ILocalVideoTrack } from "agora-rtc-react";
+
+interface DevicesProps {
+  client: string;
+  dispatch: AppDispatch;
+  localAudioTrack: ILocalAudioTrack | null;
+  localVideoTrack: ILocalVideoTrack | null;
+  localPlayerRef: React.RefObject<HTMLDivElement>;
+};
 
 let isUpdatingDevices = false; // Control de ejecuciones simultáneas
 
-const updateDevices = async ({ client, dispatch, localAudioTrack, localVideoTrack, localPlayerRef }): Promise<void> => {
+const updateDevices = async (
+  { 
+    client, 
+    dispatch, 
+    localAudioTrack, 
+    localVideoTrack, 
+    localPlayerRef
+ }:DevicesProps): Promise<void> => {
+  
   if (isUpdatingDevices) {
     console.log("Actualización de dispositivos ya en progreso. Abortando...");
     return;

@@ -2,20 +2,25 @@ import React from 'react';
 import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaSignOutAlt } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAudioMuted, setVideoMuted } from '../redux/actions';
+import { AppDispatch } from '../redux/store';
 
-interface ControlPanelProps {
+interface State {
   audioMuted: boolean;
   videoMuted: boolean;
   localVideoTrack:any
-}
+};
+interface ControlPanelProps{
+  leaveChannel: () => Promise<void>;
+  localPlayerRef: React.RefObject<HTMLDivElement>
+};
 
 const ControlPanel: React.FC<ControlPanelProps> = ({leaveChannel, localPlayerRef}) => {
 
-  const videoMuted = useSelector((state: ControlPanelProps) => state.videoMuted);
-  const audioMuted = useSelector((state: ControlPanelProps) => state.audioMuted);
-  const localVideoTrack = useSelector((state: ControlPanelProps) => state.localVideoTrack);
+  const videoMuted = useSelector((state: State) => state.videoMuted);
+  const audioMuted = useSelector((state: State) => state.audioMuted);
+  const localVideoTrack = useSelector((state: State) => state.localVideoTrack);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const toggleAudio = ()=>{
     dispatch(setAudioMuted(!audioMuted));

@@ -1,20 +1,24 @@
+import { ILocalVideoTrack } from "agora-rtc-react";
 import React, { useEffect, useRef } from "react";
 import { FaUserAltSlash } from 'react-icons/fa';
 import { useSelector } from "react-redux";
 
 interface LocalPlayerProps {
-  videoMuted: boolean;
-  selectedAvatar: string | null;
   localPlayerRef: React.RefObject<HTMLDivElement>;
   userName: string;
+  selectedAvatar: string | null;
+}
+
+interface State {
   remoteUsers: string[];
-  localVideoTrack: any;
+  localVideoTrack: ILocalVideoTrack;
+  videoMuted: boolean;
 }
 
 const LocalPlayer: React.FC<LocalPlayerProps> = ({ localPlayerRef, userName, selectedAvatar }) => {
 
-  const localVideoTrack = useSelector((state: LocalPlayerProps) => state.localVideoTrack);
-  const videoMuted = useSelector((state: LocalPlayerProps) => state.videoMuted);
+  const localVideoTrack = useSelector((state: State) => state.localVideoTrack);
+  const videoMuted = useSelector((state: State) => state.videoMuted);
 
   // Referencia al video para controlarlo
   const videoRef = useRef<HTMLVideoElement | null>(null);

@@ -1,3 +1,5 @@
+import { IAgoraRTCClient } from "agora-rtc-sdk-ng";
+
 // Definir los tipos de acción como cadenas literales
 export const SET_JOINED = "SET_JOINED";
 export const SET_CLIENT = "SET_CLIENT";
@@ -18,7 +20,7 @@ interface SetJoinedAction {
 
 interface SetClientAction {
   type: typeof SET_CLIENT;
-  payload: any; // Aquí puedes cambiar 'any' por el tipo específico de tu cliente
+  payload: IAgoraRTCClient; 
 }
 
 interface SetVideoMutedAction {
@@ -58,7 +60,7 @@ export const setJoined = (joined: boolean): SetJoinedAction => ({
   payload: joined,
 });
 
-export const setClient = (client: any): SetClientAction => ({
+export const setClient = (client: IAgoraRTCClient): SetClientAction => ({
   type: SET_CLIENT,
   payload: client,
 });

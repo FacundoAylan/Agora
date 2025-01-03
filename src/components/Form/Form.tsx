@@ -4,18 +4,14 @@ import { JoinChannel } from "../hook/initClient";
 
 import { addDoc, collection } from "firebase/firestore";
 import {db} from '../../firebase/firebase'
+import { AppDispatch } from "../redux/store";
 
 // Define la interfaz para las props
 interface FormProps {
-  selectedAvatar: string | null;
-  setSelectedAvatar: React.Dispatch<React.SetStateAction<string | null>>;
-  userName: string;
-  setUserName: React.Dispatch<React.SetStateAction<string>>;
-  joinChannel: (e: React.FormEvent) => void;
-  APP_ID: string | null;
-  CHANNEL: string | null;
-  TOKEN:string | null; 
-  RTCUID:string | null;
+  APP_ID: string;
+  CHANNEL?: string;
+  TOKEN: string | null; 
+  RTCUID:string;
 }
 
 const FormAgora: React.FC<FormProps> = ({APP_ID, CHANNEL, TOKEN, RTCUID}) => {
@@ -25,7 +21,7 @@ const FormAgora: React.FC<FormProps> = ({APP_ID, CHANNEL, TOKEN, RTCUID}) => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   // Manejador para cuando se selecciona un avatar
   const handleAvatarClick = (avatar: string) => {
@@ -46,6 +42,7 @@ const FormAgora: React.FC<FormProps> = ({APP_ID, CHANNEL, TOKEN, RTCUID}) => {
       return;
     }
 
+    
     // Llamada a la función JoinChannel
     await JoinChannel({
       dispatch,
@@ -56,6 +53,10 @@ const FormAgora: React.FC<FormProps> = ({APP_ID, CHANNEL, TOKEN, RTCUID}) => {
     });
 
     const handleAdd = async () => {
+      if (!CHANNEL) {
+        console.error("El canal no es válido.");
+        return;
+      }
       try {
         const docRef = await addDoc(collection(db, CHANNEL), {
           data: {
