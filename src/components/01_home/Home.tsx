@@ -10,9 +10,11 @@ const Home  = () => {
     //Variables para crear el cliente
     const joined = useSelector((state: { joined: boolean }) => state.joined);
     const APP_ID: string = import.meta.env.VITE_AGORA_API;
-    const { CHANNEL } = useParams<{ CHANNEL: string | undefined }>();
-    const TOKEN: string | null |undefined = null;
+    let { CHANNEL } = useParams<{ CHANNEL: string }>();
+    const TOKEN: string | null = null;
     const [RTCUID] = useState(v4()); 
+
+    CHANNEL = CHANNEL?? '';
 
   return (
     <>
