@@ -1,3 +1,4 @@
+import { ICameraVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
 import {
   SET_JOINED,
   SET_CLIENT,
@@ -15,8 +16,8 @@ interface State {
   selectedAvatar: string | null;
   client: any; 
   joined: boolean;
-  localAudioTrack: MediaStreamTrack | null;
-  localVideoTrack: MediaStreamTrack | null;
+  localAudioTrack: ILocalAudioTrack | null;
+  localVideoTrack: ICameraVideoTrack | null;
   audioMuted: boolean;
   videoMuted: boolean;
 }

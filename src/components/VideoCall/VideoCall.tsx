@@ -14,12 +14,13 @@ import { collection, deleteDoc, doc, getDocs, query, where, onSnapshot } from "f
 import { db } from "../../firebase/firebase.js";
 import RemoteUsers from "./RemoteUser.js";
 import { AppDispatch } from "../redux/store.js";
+import { ILocalAudioTrack, ILocalVideoTrack } from "agora-rtc-sdk-ng";
 
 
 interface State {
   client: any;
-  localAudioTrack: MediaStreamTrack | null;
-  localVideoTrack: MediaStreamTrack | null;
+  localAudioTrack: ILocalAudioTrack | null;
+  localVideoTrack: ILocalVideoTrack | null;
 }
 
 interface Users{
