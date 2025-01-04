@@ -1,4 +1,4 @@
-import { ILocalVideoTrack } from "agora-rtc-react";
+import { ILocalVideoTrack } from "agora-rtc-sdk-ng";
 import React, { useEffect, useRef } from "react";
 import { FaUserAltSlash } from 'react-icons/fa';
 import { useSelector } from "react-redux";

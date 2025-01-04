@@ -3,5 +3,9 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true, // Opcional: Ignorar la verificación de bibliotecas externas
+    "typeRoots": ["./node_modules/@types"] // Asegúrate de incluir este directorio
+  }
 }
