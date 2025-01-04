@@ -54,17 +54,17 @@ const VideoCall: React.FC<VideoCallProps> = ({ CHANNEL, RTCUID }) => {
     }
   
     // Funcionalidad para la detección de dispositivos
-    const handleDeviceChange = async() => {
-      await updateDevices({
-        client,
-        dispatch,
-        localAudioTrack,
-        localVideoTrack,
-        localPlayerRef,
-      });
-    };
+      const handleDeviceChange = async() => {
+        await updateDevices({
+          client,
+          dispatch,
+          localAudioTrack,
+          localVideoTrack,
+          localPlayerRef,
+        });
+      };
+      handleDeviceChange();
 
-    handleDeviceChange();
   
     // Agregar listener para cambios en dispositivos
     navigator.mediaDevices.addEventListener("devicechange", handleDeviceChange);

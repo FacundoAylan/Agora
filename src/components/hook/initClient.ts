@@ -6,7 +6,7 @@ interface JoinChannelProps {
   dispatch: AppDispatch;
   APP_ID: string;
   CHANNEL: string;
-  TOKEN: string | null;
+  TOKEN: null ;
   RTCUID: string; // El uid del usuario
 }
 

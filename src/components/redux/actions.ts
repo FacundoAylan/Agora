@@ -1,4 +1,4 @@
-import { IAgoraRTCClient } from "agora-rtc-sdk-ng";
+import { IAgoraRTCClient, ICameraVideoTrack, ILocalAudioTrack } from "agora-rtc-sdk-ng";
 
 // Definir los tipos de acción como cadenas literales
 export const SET_JOINED = "SET_JOINED";
@@ -35,12 +35,12 @@ interface SetAudioMutedAction {
 
 interface SetLocalAudioTrackAction {
   type: typeof SET_LOCAL_AUDIO_TRACK;
-  payload: MediaStreamTrack | null;
+  payload: ILocalAudioTrack  | null;
 }
 
 interface SetLocalVideoTrackAction {
   type: typeof SET_LOCAL_VIDEO_TRACK;
-  payload: MediaStreamTrack | null;
+  payload: ICameraVideoTrack | null;
 }
 
 
@@ -76,14 +76,14 @@ export const setAudioMuted = (audioMuted: boolean): SetAudioMutedAction => ({
 });
 
 export const setLocalAudioTrack = (
-  track: MediaStreamTrack | null
+  track: ILocalAudioTrack  | null
 ): SetLocalAudioTrackAction => ({
   type: SET_LOCAL_AUDIO_TRACK,
   payload: track,
 });
 
 export const setLocalVideoTrack = (
-  track: MediaStreamTrack | null
+  track: ICameraVideoTrack | null
 ): SetLocalVideoTrackAction => ({
   type: SET_LOCAL_VIDEO_TRACK,
   payload: track,

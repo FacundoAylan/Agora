@@ -1,14 +1,23 @@
 import { setAudioMuted, setLocalAudioTrack, setLocalVideoTrack, setVideoMuted } from "../redux/actions";
 import { AppDispatch } from "../redux/store";
-import AgoraRTC, {  ILocalAudioTrack, ILocalVideoTrack } from "agora-rtc-react";
+import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, ILocalAudioTrack, ILocalVideoTrack } from "agora-rtc-sdk-ng";
 
 interface DevicesProps {
-  client: string;
+  client: IAgoraRTCClient;
   dispatch: AppDispatch;
   localAudioTrack: ILocalAudioTrack | null;
   localVideoTrack: ILocalVideoTrack | null;
   localPlayerRef: React.RefObject<HTMLDivElement>;
-};
+}
+
+interface TrackNameProps {
+  trackMediaType: "audio" | "video";
+}
+
+interface UnpublishTrackProps {
+  track: ILocalAudioTrack | ILocalVideoTrack | null;
+  type: string;
+}
 
 let isUpdatingDevices = false; // Control de ejecuciones simultáneas
 
@@ -47,14 +56,14 @@ const updateDevices = async (
         }
 
         const publishedVideoTracks = client.localTracks.filter(
-          (track) => track.trackMediaType === "video"
+          (track:TrackNameProps) => track.trackMediaType === "video"
         );
         if (publishedVideoTracks.length > 0) {
           console.log("Pista de video ya está publicada");
           return;
         }
 
-        const videoTrack = await AgoraRTC.createCameraVideoTrack();
+        const videoTrack: ICameraVideoTrack = await AgoraRTC.createCameraVideoTrack();
         dispatch(setLocalVideoTrack(videoTrack));
         dispatch(setVideoMuted(false));
 
@@ -72,14 +81,14 @@ const updateDevices = async (
         }
 
         const publishedAudioTracks = client.localTracks.filter(
-          (track) => track.trackMediaType === "audio"
+          (track: TrackNameProps) => track.trackMediaType === "audio"
         );
         if (publishedAudioTracks.length > 0) {
           console.log("Pista de audio ya está publicada");
           return;
         }
 
-        const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        const audioTrack: ILocalAudioTrack  = await AgoraRTC.createMicrophoneAudioTrack();
         dispatch(setLocalAudioTrack(audioTrack));
         dispatch(setAudioMuted(false));
 
@@ -89,11 +98,10 @@ const updateDevices = async (
     };
 
     // Función para despublicar y cerrar una pista
-    const unpublishTrack = async (track, type: "video" | "audio") => {
+    const unpublishTrack = async ({track, type}: UnpublishTrackProps): Promise<void> => {
       if (track) {
         await client.unpublish([track]);
         track.stop();
-        track.close();
 
         if (type === "video") {
           dispatch(setLocalVideoTrack(null));
@@ -111,18 +119,18 @@ const updateDevices = async (
     if (videoConnected) {
       await createTrack("video");
     } else {
-      await unpublishTrack(localVideoTrack, "video");
+      await unpublishTrack({ track: localVideoTrack, type: "video" });
     }
 
     if (audioConnected) {
       await createTrack("audio");
     } else {
-      await unpublishTrack(localAudioTrack, "audio");
+      await unpublishTrack({ track: localAudioTrack, type: "audio" });
     }
   } catch (error) {
     console.error("Error al actualizar dispositivos:", error);
   } finally {
-    isUpdatingDevices = false; // Liberar bloqueo
+    isUpdatingDevices = false; 
   }
 };
 

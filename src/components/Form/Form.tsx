@@ -10,7 +10,7 @@ import { AppDispatch } from "../redux/store";
 interface FormProps {
   APP_ID: string;
   CHANNEL?: string | undefined;
-  TOKEN: null | undefined; 
+  TOKEN: null; 
   RTCUID:string;
 }
 
