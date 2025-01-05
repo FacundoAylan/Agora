@@ -10,11 +10,12 @@ import {
 import { useEffect, useRef, useState } from "react";
 import LocalPlayer from "./LocalPlayer";
 import updateDevices from "../hook/devices";
-import { collection, deleteDoc, doc, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, where, onSnapshot, Firestore, writeBatch } from "firebase/firestore";
 import { db } from "../../firebase/firebase.js";
 import RemoteUsers from "./RemoteUser.js";
 import { AppDispatch } from "../redux/store.js";
 import { ILocalAudioTrack, ILocalVideoTrack } from "agora-rtc-sdk-ng";
+import { string } from "prop-types";
 
 
 interface State {
@@ -171,39 +172,49 @@ const VideoCall: React.FC<VideoCallProps> = ({ CHANNEL, RTCUID }) => {
     }
   };
 
-  // useEffect(()=>{
-  //   //Logica para la salida de la sala y eliminacion de la misma dentro de 2 horas 
-  //   const clearChannel = setTimeout(()=>{
-  
-  //     leaveChannel()
-  
-  //     const deleteCollection = async (db, collectionName) => {
-  //       const collectionRef = collection(db, collectionName);
-  //       const querySnapshot = await getDocs(collectionRef);
-  //       const batch = writeBatch(db);
-      
-  //       querySnapshot.forEach((doc) => {
-  //         batch.delete(doc.ref);
-  //       });
-      
-  //       await batch.commit();
-  //       console.log(`La colección '${collectionName}' ha sido eliminada completamente.`);
-  //     };
-      
-  //     // Llamar a la función para eliminar la colección
-  //     deleteCollection(db, CHANNEL);
-  //   },4000);
-  
-  //   //Funcionalidad para avisar al usuario que la reunión va a finalizar
-  //   const alertTime = setTimeout(()=>{
-  //     SetShowMessage(previu => !previu);
-  //   },3000)
+  useEffect(()=>{
 
-  //   return ()=>{
-  //     clearTimeout(clearChannel);
-  //     clearTimeout(alertTime);
-  //   }
-  // },[])
+    // Tiempo para la salida de la sala (2 horas en milisegundos)
+    const timeToLeave = 2 * 60 * 60 * 1000; // 7200000 ms
+    // Tiempo para mostrar el aviso (10 minutos antes de 2 horas)
+    const timeToAlert = timeToLeave - 10 * 60 * 1000; // 120000 ms antes
+
+    //Logica para la salida de la sala y eliminacion de la misma dentro de 2 horas 
+    const clearChannel = setTimeout(()=>{
+  
+      leaveChannel()
+  
+      const deleteCollection = async (db:Firestore, collectionName:string) => {
+        const collectionRef = collection(db, collectionName);
+        const querySnapshot = await getDocs(collectionRef);
+        const batch = writeBatch(db);
+      
+        querySnapshot.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+      
+        await batch.commit();
+        console.log(`La colección '${collectionName}' ha sido eliminada completamente.`);
+      };
+      
+      // Llamar a la función para eliminar la colección
+      if(CHANNEL){
+        deleteCollection(db, CHANNEL);
+      }else{
+        console.log('CHANNEL undefined.');
+      }
+    },timeToLeave);
+  
+    //Funcionalidad para avisar al usuario que la reunión va a finalizar
+    const alertTime = setTimeout(()=>{
+      SetShowMessage(previu => !previu);
+    },timeToAlert)
+
+    return ()=>{
+      clearTimeout(clearChannel);
+      clearTimeout(alertTime);
+    }
+  },[])
 
   return (
     <div className="w-full h-screen relative">
