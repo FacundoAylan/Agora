@@ -15,7 +15,6 @@ import { db } from "../../firebase/firebase.js";
 import RemoteUsers from "./RemoteUser.js";
 import { AppDispatch } from "../redux/store.js";
 import { ILocalAudioTrack, ILocalVideoTrack } from "agora-rtc-sdk-ng";
-import { string } from "prop-types";
 
 
 interface State {
