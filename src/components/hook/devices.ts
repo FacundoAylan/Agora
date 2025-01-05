@@ -49,51 +49,55 @@ const updateDevices = async (
 
     // Crear pista de video si es necesario
     const createTrack = async (type: "video" | "audio") => {
-      if (type === "video") {
-        if (localVideoTrack) {
-          console.log("Pista de video ya existe");
-          return;
+      try{
+
+        if (type === "video") {
+          if (localVideoTrack) {
+            console.log("Pista de video ya existe");
+            return;
+          }
+  
+          const publishedVideoTracks = client.localTracks.filter(
+            (track:TrackNameProps) => track.trackMediaType === "video"
+          );
+          if (publishedVideoTracks.length > 0) {
+            console.log("Pista de video ya está publicada");
+            return;
+          }
+  
+          const videoTrack: ICameraVideoTrack = await AgoraRTC.createCameraVideoTrack();
+          dispatch(setLocalVideoTrack(videoTrack));
+  
+          if (localPlayerRef?.current) {
+            localPlayerRef.current.innerHTML = ""; // Limpiar contenido anterior
+            videoTrack.play(localPlayerRef.current);
+          }
+  
+          await client.publish([videoTrack]);
+          console.log("Cámara conectada y pista de video publicada");
+        } else if (type === "audio") {
+          if (localAudioTrack) {
+            console.log("Pista de audio ya existe");
+            return;
+          }
+  
+          const publishedAudioTracks = client.localTracks.filter(
+            (track: TrackNameProps) => track.trackMediaType === "audio"
+          );
+          if (publishedAudioTracks.length > 0) {
+            console.log("Pista de audio ya está publicada");
+            return;
+          }
+  
+          const audioTrack: ILocalAudioTrack  = await AgoraRTC.createMicrophoneAudioTrack();
+          dispatch(setLocalAudioTrack(audioTrack));
+          dispatch(setAudioMuted(false));
+  
+          await client.publish([audioTrack]);
+          console.log("Micrófono conectado y pista de audio publicada");
         }
-
-        const publishedVideoTracks = client.localTracks.filter(
-          (track:TrackNameProps) => track.trackMediaType === "video"
-        );
-        if (publishedVideoTracks.length > 0) {
-          console.log("Pista de video ya está publicada");
-          return;
-        }
-
-        const videoTrack: ICameraVideoTrack = await AgoraRTC.createCameraVideoTrack();
-        dispatch(setLocalVideoTrack(videoTrack));
-        dispatch(setVideoMuted(false));
-
-        if (localPlayerRef?.current) {
-          localPlayerRef.current.innerHTML = ""; // Limpiar contenido anterior
-          videoTrack.play(localPlayerRef.current);
-        }
-
-        await client.publish([videoTrack]);
-        console.log("Cámara conectada y pista de video publicada");
-      } else if (type === "audio") {
-        if (localAudioTrack) {
-          console.log("Pista de audio ya existe");
-          return;
-        }
-
-        const publishedAudioTracks = client.localTracks.filter(
-          (track: TrackNameProps) => track.trackMediaType === "audio"
-        );
-        if (publishedAudioTracks.length > 0) {
-          console.log("Pista de audio ya está publicada");
-          return;
-        }
-
-        const audioTrack: ILocalAudioTrack  = await AgoraRTC.createMicrophoneAudioTrack();
-        dispatch(setLocalAudioTrack(audioTrack));
-        dispatch(setAudioMuted(false));
-
-        await client.publish([audioTrack]);
-        console.log("Micrófono conectado y pista de audio publicada");
+      }catch(error){
+        console.log('Error en la publicación de las pistas:',error)
       }
     };
 

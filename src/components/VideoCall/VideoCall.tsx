@@ -272,6 +272,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ CHANNEL, RTCUID }) => {
       <ControlPanel 
         leaveChannel={leaveChannel} 
         localPlayerRef={localPlayerRef}
+        localAudioTrack={localAudioTrack}
       />
     </div>
 

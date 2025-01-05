@@ -3,6 +3,7 @@ import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaSignOutAlt } 
 import { useDispatch, useSelector } from 'react-redux';
 import { setAudioMuted, setVideoMuted } from '../redux/actions';
 import { AppDispatch } from '../redux/store';
+import { ILocalAudioTrack } from 'agora-rtc-sdk-ng';
 
 interface State {
   audioMuted: boolean;
@@ -12,9 +13,10 @@ interface State {
 interface ControlPanelProps{
   leaveChannel: () => Promise<void>;
   localPlayerRef: React.RefObject<HTMLDivElement>
+  localAudioTrack: ILocalAudioTrack | null
 };
 
-const ControlPanel: React.FC<ControlPanelProps> = ({leaveChannel, localPlayerRef}) => {
+const ControlPanel: React.FC<ControlPanelProps> = ({leaveChannel, localPlayerRef, localAudioTrack}) => {
 
   const videoMuted = useSelector((state: State) => state.videoMuted);
   const audioMuted = useSelector((state: State) => state.audioMuted);
@@ -22,8 +24,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({leaveChannel, localPlayerRef
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const toggleAudio = ()=>{
-    dispatch(setAudioMuted(!audioMuted));
+  const toggleAudio = async()=>{
+    if (!localAudioTrack) return;
+    const isMuted = !audioMuted;
+    await localAudioTrack.setMuted(isMuted);
+    dispatch(setAudioMuted(isMuted));
   }
 
   const toggleVideo = () => {

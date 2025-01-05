@@ -16,10 +16,10 @@ const RemoteUsers: React.FC<RemoteProps> = ({ uid, userName, selectedAvatar, cli
   useEffect(() => {
     const handleUserPublished = async (user: any, mediaType: string) => {
       if (uid === user.uid) {
-        if (mediaType === "video") {
+        await client.subscribe(user, mediaType);
+        if (mediaType === "video" && user.videoTrack) {
           try {
             console.log("Subscribing to video for user:", user.uid);
-            await client.subscribe(user, mediaType);
             let video = user.hasVideo
             setHasVideo(video);
             // Crear un div para reproducir el video
@@ -29,9 +29,13 @@ const RemoteUsers: React.FC<RemoteProps> = ({ uid, userName, selectedAvatar, cli
           } catch (error) {
             console.error("Error subscribing to video:", error);
           }
-        }else if (mediaType === "audio") {
-          user.audioTrack?.play(); // Reproduce el audio directamente
-          console.log("Audio is playing for user:", user.uid);
+        }else if (mediaType === "audio" && user.audioTrack) {
+          try{
+            user.audioTrack.play(); // Reproduce el audio directamente
+            console.log("Audio is playing for user:", user.uid);
+          }catch(error){
+            console.log('Error al publicar pista de audio: ', error)
+          }
         }
       }
     };
